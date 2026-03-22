@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 黑色背景 -->
+  <rect width="200" height="200" fill="#111111" rx="8"/>
+  <!-- 金色邊框 -->
+  <rect x="4" y="4" width="192" height="192" fill="none" stroke="#d4a017" stroke-width="3" rx="6"/>
+  <!-- 深紅色斜線裝飾 -->
+  <polygon points="80,0 200,0 200,120" fill="#8b0000" opacity="0.9"/>
+  <polygon points="100,0 200,0 200,100" fill="#cc0000" opacity="0.8"/>
+  <!-- 金色細斜線 -->
+  <line x1="70" y1="0" x2="200" y2="130" stroke="#d4a017" stroke-width="2" opacity="0.6"/>
+  <!-- 白色 R 字母 -->
+  <text x="100" y="135" font-family="Arial Black, Arial" font-weight="900" font-size="120" fill="white" text-anchor="middle">R</text>
+</svg>
