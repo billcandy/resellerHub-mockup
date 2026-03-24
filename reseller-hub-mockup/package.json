@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "main": "electron/main.cjs",
+  "bin": "server/serve.cjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/billcandy/resellerHub-mockup.git"
@@ -13,8 +13,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron:dev": "vite build && electron .",
-    "electron:build": "vite build && electron-builder --win"
+    "serve": "node server/serve.cjs",
+    "pkg:build": "vite build && npx pkg . --targets node20-win-x64 --output release/ResellerHub.exe"
   },
   "dependencies": {
     "lucide-react": "^0.577.0",
@@ -29,8 +29,6 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "electron": "^35.0.1",
-    "electron-builder": "^26.0.12",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
@@ -38,26 +36,10 @@
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.1"
   },
-  "build": {
-    "appId": "com.resellerhub.mockup",
-    "productName": "ResellerHub",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*"
+  "pkg": {
+    "assets": [
+      "dist/**/*"
     ],
-    "win": {
-      "target": [
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
-      ]
-    },
-    "portable": {
-      "artifactName": "ResellerHub-${version}-Portable.exe"
-    }
+    "outputPath": "release"
   }
 }

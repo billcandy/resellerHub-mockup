@@ -1,4 +1,4 @@
-# 建置 Windows EXE 離線安裝包
+# 建置 Windows EXE（本地 Web Server）
 # 觸發方式：
 #   1. 手動觸發（workflow_dispatch）→ 從 Actions 頁面下載 Artifacts
 #   2. 打 tag（v*）→ 自動建立 GitHub Release 並上傳 .exe
@@ -34,16 +34,14 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Build Electron EXE
-        run: npx electron-builder --win
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package as Windows EXE
+        run: npx pkg . --targets node20-win-x64 --output release/ResellerHub.exe
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ResellerHub-Windows
-          path: reseller-hub-mockup/release/*.exe
+          path: reseller-hub-mockup/release/ResellerHub.exe
           retention-days: 30
 
       # 打 tag 時自動建立 GitHub Release
@@ -51,7 +49,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: reseller-hub-mockup/release/*.exe
+          files: reseller-hub-mockup/release/ResellerHub.exe
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
