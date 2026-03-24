@@ -50,8 +50,7 @@
           "target": "portable",
           "arch": ["x64"]
         }
-      ],
-      "icon": "public/favicon.svg"
+      ]
     },
     "portable": {
       "artifactName": "ResellerHub-${version}-Portable.exe"
