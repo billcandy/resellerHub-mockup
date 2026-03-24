@@ -7,8 +7,19 @@ import { createContext, useContext, useState, useCallback } from 'react'
 import {
   accounts,
   initialClients,
+  initialLilinClients,
+  initialAlphaClients,
+  initialGammaClients,
   buildInitialClientInventory,
   buildInitialLilinInventory,
+  buildInitialLilinClientInventory,
+  buildInitialAlphaClientInventory,
+  buildInitialGammaClientInventory,
+  buildInitialSecurenetClientInventory,
+  buildInitialSafeguardClientInventory,
+  buildInitialVisionlinkClientInventory,
+  buildInitialSmarteyeClientInventory,
+  orgHierarchyMap,
   generateId,
   products,
 } from '../data/initialData'
@@ -112,6 +123,64 @@ export function AppProvider({ children }) {
   // 取得當前帳號的庫存
   const currentInventory = currentUser === 'lilin' ? lilinInventory : []
 
+  // 所有層級的庫存快照（用於計算 license 摘要）
+  const allInventories = {
+    ...clientInventory,
+    ...buildInitialLilinClientInventory(),
+    ...buildInitialAlphaClientInventory(),
+    ...buildInitialGammaClientInventory(),
+    ...buildInitialSecurenetClientInventory(),
+    ...buildInitialSafeguardClientInventory(),
+    ...buildInitialVisionlinkClientInventory(),
+    ...buildInitialSmarteyeClientInventory(),
+  }
+
+  // 取得直屬 Parent Org 資訊（只回傳直屬上層，不暴露更上面的）
+  const getParentOrg = useCallback((accountId) => {
+    const account = accounts[accountId]
+    if (!account || !account.parentOrg) return null
+    const parent = accounts[account.parentOrg]
+    return parent ? { orgName: parent.orgName, address: parent.address, phoneNumber: parent.phoneNumber } : null
+  }, [])
+
+  // 取得直屬 Sub Org 列表
+  const getSubOrgs = useCallback((accountId) => {
+    const hierarchy = orgHierarchyMap[accountId]
+    if (!hierarchy) return []
+    return hierarchy.clients
+  }, [])
+
+  /**
+   * 遞迴建立組織樹狀結構
+   * managed org：展開顯示其下層
+   * independent org：不展開（葉節點）
+   */
+  const getOrgTree = useCallback((accountId) => {
+    const subOrgs = getSubOrgs(accountId)
+    return subOrgs.map((org) => {
+      // 計算該 org 的 license 總數
+      const inventory = allInventories[org.id] || []
+      const totalLicenses = inventory.reduce((sum, lic) => sum + lic.qty, 0)
+
+      const node = {
+        id: org.id,
+        name: org.clientName,
+        managementType: org.managementType,
+        totalLicenses,
+        address: org.address,
+        phoneNumber: org.phoneNumber,
+        children: [],
+      }
+
+      // managed org 才遞迴展開子層
+      if (org.managementType === 'managed') {
+        node.children = getOrgTree(org.id)
+      }
+
+      return node
+    })
+  }, [allInventories, getSubOrgs])
+
   const value = {
     currentUser,
     currentAccount,
@@ -119,10 +188,14 @@ export function AppProvider({ children }) {
     clients,
     clientInventory,
     products,
+    allInventories,
     login,
     logout,
     addOrderToClient,
     deliverLicense,
+    getParentOrg,
+    getSubOrgs,
+    getOrgTree,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

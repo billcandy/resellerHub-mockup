@@ -26,6 +26,7 @@ export const accounts = {
     description: 'Master Distributor Account',
     pricingStructure: 'By License',
     role: 'Distributor',
+    parentOrg: null, // 頂層組織，無上層
   },
   lilin: {
     id: 'lilin',
@@ -37,6 +38,7 @@ export const accounts = {
     description: 'LILIN Reseller Account',
     pricingStructure: 'By License',
     role: 'Reseller',
+    parentOrg: 'admin', // 上層組織為 Admin Corp
   },
 }
 
@@ -55,6 +57,7 @@ function randomOrderNum() {
 }
 
 // 客戶清單（Admin 的客戶）
+// managementType: 'managed' = 上層可看穿到其下層組織, 'independent' = 上層只能看到這一層
 export const initialClients = [
   {
     id: 'client-lilin',
@@ -67,6 +70,7 @@ export const initialClients = [
     description: 'LILIN Reseller Account',
     pricingStructure: 'By License',
     linkedAccount: 'lilin', // 連結到 lilin 帳號
+    managementType: 'managed',
   },
   {
     id: 'client-techvision',
@@ -79,6 +83,7 @@ export const initialClients = [
     description: 'Regional reseller - West Coast',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'independent',
   },
   {
     id: 'client-securenet',
@@ -91,6 +96,7 @@ export const initialClients = [
     description: 'Enterprise security installer',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'managed',
   },
   {
     id: 'client-cloudwatch',
@@ -103,6 +109,7 @@ export const initialClients = [
     description: 'UK cloud services reseller',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'independent',
   },
   {
     id: 'client-safeguard',
@@ -115,6 +122,7 @@ export const initialClients = [
     description: 'APAC security installer',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'managed',
   },
   {
     id: 'client-prosurv',
@@ -127,6 +135,7 @@ export const initialClients = [
     description: 'Professional surveillance reseller',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'independent',
   },
   {
     id: 'client-visionlink',
@@ -139,6 +148,7 @@ export const initialClients = [
     description: 'SEA region installer',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'managed',
   },
   {
     id: 'client-smarteye',
@@ -151,6 +161,191 @@ export const initialClients = [
     description: 'European security reseller',
     pricingStructure: 'By License',
     linkedAccount: null,
+    managementType: 'managed',
+  },
+]
+
+// LILIN 的客戶清單（LILIN 的下層組織）
+export const initialLilinClients = [
+  {
+    id: 'lilin-client-alpha',
+    clientName: 'Alpha Security',
+    type: 'Installer',
+    address: '12 Alpha Rd, Taichung',
+    phoneNumber: '886-4-2345-6789',
+    vatNumber: 'VAT-ALP-010',
+    billingCycle: 'Monthly',
+    description: 'Central Taiwan security installer',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'managed',
+  },
+  {
+    id: 'lilin-client-beta',
+    clientName: 'Beta Networks',
+    type: 'Reseller',
+    address: '88 Beta St, Kaohsiung',
+    phoneNumber: '886-7-3456-7890',
+    vatNumber: 'VAT-BET-011',
+    billingCycle: 'Yearly',
+    description: 'Southern Taiwan network reseller',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+  {
+    id: 'lilin-client-gamma',
+    clientName: 'Gamma Tech',
+    type: 'Installer',
+    address: '36 Gamma Ave, Hsinchu',
+    phoneNumber: '886-3-4567-8901',
+    vatNumber: 'VAT-GAM-012',
+    billingCycle: 'Monthly',
+    description: 'Hsinchu tech park installer',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'managed',
+  },
+]
+
+// Alpha Security 的客戶清單（展示 managed 可看穿多層）
+export const initialAlphaClients = [
+  {
+    id: 'alpha-client-userco-a',
+    clientName: 'UserCo A',
+    type: 'End User',
+    address: '1 User Lane, Taichung',
+    phoneNumber: '886-4-1111-2222',
+    vatNumber: 'VAT-UCA-013',
+    billingCycle: 'Monthly',
+    description: 'End user - office building',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+  {
+    id: 'alpha-client-userco-b',
+    clientName: 'UserCo B',
+    type: 'End User',
+    address: '2 User Ave, Taichung',
+    phoneNumber: '886-4-3333-4444',
+    vatNumber: 'VAT-UCB-014',
+    billingCycle: 'Monthly',
+    description: 'End user - retail chain',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+]
+
+// Gamma Tech 的客戶清單（另一個 managed org 的下層）
+export const initialGammaClients = [
+  {
+    id: 'gamma-client-delta',
+    clientName: 'Delta Corp',
+    type: 'End User',
+    address: '99 Delta Blvd, Hsinchu',
+    phoneNumber: '886-3-5555-6666',
+    vatNumber: 'VAT-DEL-015',
+    billingCycle: 'Yearly',
+    description: 'Science park end user',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+]
+
+// SecureNet Solutions 的客戶清單（Managed，有下層）
+export const initialSecurenetClients = [
+  {
+    id: 'securenet-client-1',
+    clientName: 'Midwest Guard Co',
+    type: 'End User',
+    address: '50 Guard Ave, Detroit',
+    phoneNumber: '555-0401',
+    vatNumber: 'VAT-MWG-016',
+    billingCycle: 'Monthly',
+    description: 'Midwest industrial security',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+]
+
+// SafeGuard Systems 的客戶清單（Managed，有下層）
+export const initialSafeguardClients = [
+  {
+    id: 'safeguard-client-1',
+    clientName: 'OzSecure Pty',
+    type: 'End User',
+    address: '10 Koala St, Melbourne',
+    phoneNumber: '61-3-9876-5432',
+    vatNumber: 'VAT-OZS-017',
+    billingCycle: 'Monthly',
+    description: 'Melbourne retail security',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+  {
+    id: 'safeguard-client-2',
+    clientName: 'KiwiWatch NZ',
+    type: 'End User',
+    address: '22 Fern Rd, Auckland',
+    phoneNumber: '64-9-1234-5678',
+    vatNumber: 'VAT-KWN-018',
+    billingCycle: 'Yearly',
+    description: 'New Zealand surveillance end user',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+]
+
+// VisionLink Asia 的客戶清單（Managed，有下層）
+export const initialVisionlinkClients = [
+  {
+    id: 'visionlink-client-1',
+    clientName: 'SG Campus Security',
+    type: 'End User',
+    address: '5 Campus Dr, Singapore',
+    phoneNumber: '65-6111-2222',
+    vatNumber: 'VAT-SGC-019',
+    billingCycle: 'Monthly',
+    description: 'University campus security',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+]
+
+// SmartEye Security 的客戶清單（Managed，有下層）
+export const initialSmarteyeClients = [
+  {
+    id: 'smarteye-client-1',
+    clientName: 'BerlinWatch GmbH',
+    type: 'End User',
+    address: '33 Wache Str, Berlin',
+    phoneNumber: '49-30-9999-8888',
+    vatNumber: 'VAT-BWG-020',
+    billingCycle: 'Yearly',
+    description: 'Berlin commercial security',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
+  },
+  {
+    id: 'smarteye-client-2',
+    clientName: 'MunichSafe AG',
+    type: 'End User',
+    address: '77 Sicher Weg, Munich',
+    phoneNumber: '49-89-7777-6666',
+    vatNumber: 'VAT-MSA-021',
+    billingCycle: 'Monthly',
+    description: 'Munich office building security',
+    pricingStructure: 'By License',
+    linkedAccount: null,
+    managementType: 'independent',
   },
 ]
 
@@ -211,4 +406,182 @@ export function buildInitialLilinInventory() {
     { id: generateId(), orderNumber: randomOrderNum(), productName: 'WatchNode', price: 50, qty: 2, unused: 2, used: 0, deliveredAt: pastDate(30), deliveredBy: 'admin', status: 'delivered' },
     { id: generateId(), orderNumber: randomOrderNum(), productName: 'Call', price: 30, qty: 1, unused: 1, used: 0, deliveredAt: pastDate(15), deliveredBy: 'admin', status: 'delivered' },
   ]
+}
+
+// LILIN 客戶的 License 庫存
+export function buildInitialLilinClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'lilin-client-alpha': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'WatchNode', price: 50, qty: 3, unused: 1, used: 2, deliveredAt: pastDate(20), deliveredBy: 'lilin', status: 'delivered' },
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Cannguard', price: 45, qty: 2, unused: 1, used: 1, deliveredAt: pastDate(10), deliveredBy: 'lilin', status: 'delivered' },
+    ],
+    'lilin-client-beta': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'NxMap', price: 60, qty: 1, unused: 0, used: 1, deliveredAt: pastDate(35), deliveredBy: 'lilin', status: 'delivered' },
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Call', price: 30, qty: 2, unused: 1, used: 1, deliveredAt: pastDate(18), deliveredBy: 'lilin', status: 'delivered' },
+    ],
+    'lilin-client-gamma': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Nexus', price: 80, qty: 1, unused: 1, used: 0, deliveredAt: pastDate(7), deliveredBy: 'lilin', status: 'delivered' },
+    ],
+  }
+}
+
+// Alpha Security 客戶的 License 庫存
+export function buildInitialAlphaClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'alpha-client-userco-a': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'WatchNode', price: 50, qty: 1, unused: 0, used: 1, deliveredAt: pastDate(12), deliveredBy: 'alpha', status: 'delivered' },
+    ],
+    'alpha-client-userco-b': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Cannguard', price: 45, qty: 1, unused: 1, used: 0, deliveredAt: pastDate(5), deliveredBy: 'alpha', status: 'delivered' },
+    ],
+  }
+}
+
+// Gamma Tech 客戶的 License 庫存
+export function buildInitialGammaClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'gamma-client-delta': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Nexus', price: 80, qty: 1, unused: 0, used: 1, deliveredAt: pastDate(3), deliveredBy: 'gamma', status: 'delivered' },
+    ],
+  }
+}
+
+// SecureNet Solutions 客戶的 License 庫存
+export function buildInitialSecurenetClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'securenet-client-1': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Nexus', price: 80, qty: 1, unused: 0, used: 1, deliveredAt: pastDate(45), deliveredBy: 'securenet', status: 'delivered' },
+    ],
+  }
+}
+
+// SafeGuard Systems 客戶的 License 庫存
+export function buildInitialSafeguardClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'safeguard-client-1': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Trailer Platform', price: 95, qty: 1, unused: 1, used: 0, deliveredAt: pastDate(8), deliveredBy: 'safeguard', status: 'delivered' },
+    ],
+    'safeguard-client-2': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Call', price: 30, qty: 2, unused: 1, used: 1, deliveredAt: pastDate(20), deliveredBy: 'safeguard', status: 'delivered' },
+    ],
+  }
+}
+
+// VisionLink Asia 客戶的 License 庫存
+export function buildInitialVisionlinkClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'visionlink-client-1': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'NxMap', price: 60, qty: 1, unused: 0, used: 1, deliveredAt: pastDate(15), deliveredBy: 'visionlink', status: 'delivered' },
+    ],
+  }
+}
+
+// SmartEye Security 客戶的 License 庫存
+export function buildInitialSmarteyeClientInventory() {
+  const now = new Date()
+  const pastDate = (daysAgo) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - daysAgo)
+    return d.toISOString()
+  }
+
+  return {
+    'smarteye-client-1': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'Merlin Cloud Recording', price: 120, qty: 1, unused: 1, used: 0, deliveredAt: pastDate(6), deliveredBy: 'smarteye', status: 'delivered' },
+    ],
+    'smarteye-client-2': [
+      { id: generateId(), orderNumber: randomOrderNum(), productName: 'WatchNode', price: 50, qty: 2, unused: 1, used: 1, deliveredAt: pastDate(30), deliveredBy: 'smarteye', status: 'delivered' },
+    ],
+  }
+}
+
+/**
+ * 組織階層資料結構
+ * 定義每個帳號的下層組織列表及其庫存來源
+ * 用於 Organization Tab 的樹狀圖和表格
+ */
+// orgHierarchyMap 需要同時支援：
+// 1. 帳號 ID 查詢（登入者直接查詢自己的下層）
+// 2. 客戶 ID 查詢（遞迴建立樹狀結構時使用）
+export const orgHierarchyMap = {
+  // 帳號 ID 對應
+  admin: {
+    clients: initialClients,
+    getInventory: buildInitialClientInventory,
+  },
+  lilin: {
+    clients: initialLilinClients,
+    getInventory: buildInitialLilinClientInventory,
+  },
+  // 客戶 ID 對應（遞迴用）
+  'client-lilin': {
+    clients: initialLilinClients,
+    getInventory: buildInitialLilinClientInventory,
+  },
+  'lilin-client-alpha': {
+    clients: initialAlphaClients,
+    getInventory: buildInitialAlphaClientInventory,
+  },
+  'lilin-client-gamma': {
+    clients: initialGammaClients,
+    getInventory: buildInitialGammaClientInventory,
+  },
+  'client-securenet': {
+    clients: initialSecurenetClients,
+    getInventory: buildInitialSecurenetClientInventory,
+  },
+  'client-safeguard': {
+    clients: initialSafeguardClients,
+    getInventory: buildInitialSafeguardClientInventory,
+  },
+  'client-visionlink': {
+    clients: initialVisionlinkClients,
+    getInventory: buildInitialVisionlinkClientInventory,
+  },
+  'client-smarteye': {
+    clients: initialSmarteyeClients,
+    getInventory: buildInitialSmarteyeClientInventory,
+  },
 }
