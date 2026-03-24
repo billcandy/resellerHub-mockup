@@ -1,0 +1,57 @@
+# 建置 Windows EXE 離線安裝包
+# 觸發方式：
+#   1. 手動觸發（workflow_dispatch）→ 從 Actions 頁面下載 Artifacts
+#   2. 打 tag（v*）→ 自動建立 GitHub Release 並上傳 .exe
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: reseller-hub-mockup
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: reseller-hub-mockup/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vite app
+        run: npm run build
+
+      - name: Build Electron EXE
+        run: npx electron-builder --win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ResellerHub-Windows
+          path: reseller-hub-mockup/release/*.exe
+          retention-days: 30
+
+      # 打 tag 時自動建立 GitHub Release
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: reseller-hub-mockup/release/*.exe
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
