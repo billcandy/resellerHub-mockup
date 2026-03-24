@@ -21,10 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 18 (for build)
+      # 用 Node 20 來 build Vite（Vite 8 需要 Node 20+）
+      - name: Setup Node.js 20 (for Vite build)
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: reseller-hub-mockup/package-lock.json
 
@@ -33,6 +34,12 @@ jobs:
 
       - name: Build Vite app
         run: npm run build
+
+      # 切到 Node 18 給 pkg 用（pkg 最高只支援 node18）
+      - name: Setup Node.js 18 (for pkg)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
       - name: Package as Windows EXE
         run: npx pkg . --targets node18-win-x64 --output release/ResellerHub.exe
